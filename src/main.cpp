@@ -20,7 +20,7 @@ const int daylightOffset_sec = 3600;
 // Globals
 String pcState = "UNKNOWN";
 int shutdownHour = 22;
-int shutdownMinute = 0;
+int shutdownMinute = 01;
 
 WebServer server(80);
 
@@ -43,6 +43,19 @@ void switchOn() {
     setPCState(true);
   } else {
     Serial.println("PC ALREADY ON");
+    setPCState(true);
+  }
+}
+
+void switchOff() {
+  if (digitalRead(inPin) == LOW) {
+    digitalWrite(outPin, LOW);
+    delay(5000);
+    digitalWrite(outPin, HIGH);
+    Serial.println("Switched PC OFF.");
+    setPCState(true);
+  } else {
+    Serial.println("PC ALREADY OFF");
     setPCState(true);
   }
 }
@@ -120,9 +133,9 @@ void loop() {
     }
 
     // Future: check for shutdownHour/shutdownMinute
-    // if (timeinfo.tm_hour == shutdownHour && timeinfo.tm_min == shutdownMinute && timeinfo.tm_sec == 0) {
-    //   switchOff();
-    // }
+    if (timeinfo.tm_hour == shutdownHour && timeinfo.tm_min == shutdownMinute && timeinfo.tm_sec == 0) {
+      switchOff();
+    }
 
   } else {
     Serial.println("Failed to get time.");
