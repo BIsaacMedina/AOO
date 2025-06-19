@@ -1,6 +1,6 @@
 # ESP32 PC Auto-On Scheduler
 
-This project uses an ESP32 board to automatically power on a desktop PC at a scheduled time each day, using GPIO pin control and NTP-synced time over Wi-Fi. It includes a simple HTTP API for remote schedule configuration and system state monitoring, and is designed for future integration with a Pixoo64 display and Homepage dashboard.
+This project uses an ESP32 board to automatically power on and power off a desktop PC at a scheduled time each day, using GPIO pin control and NTP-synced time over Wi-Fi. It includes a simple HTTP API for remote schedule configuration and system state monitoring, and is designed for future integration with a Pixoo64 display and Homepage dashboard.
 
 ---
 
@@ -15,7 +15,7 @@ This project uses an ESP32 board to automatically power on a desktop PC at a sch
 ## Features
 
 - NTP Time Sync: Automatically syncs time over Wi-Fi using NTP (Pacific Time).
-- Power On PC: Controls a transistor or relay connected to the PC's power switch.
+- Power On\Off PC: Controls a pin connected to the PC's motherboard.
 - State Detection: Detects PC power state via GPIO input.
 - HTTP API:
   - `GET /api/status` returns `{ "state": "ON" }` or `"OFF"`
@@ -82,7 +82,8 @@ Once booted:
 - The onboard LED blinks every second.
 - The ESP32 syncs time via NTP.
 - At 6:00:00 AM Pacific Time, it will pulse the PC power pin to switch the machine on (if off).
-- The ESP32 also detects and records the PC's current state using the `inPin`.
+- At 10:00:00 PM Pacific Time, it will pulse the PC power pin to switch the machine off (if on).
+- The ESP32 also detects and records the PC's current state using the `inPin` which takes input from the motherboard pin that powers the light on the power button.
 
 ---
 
@@ -127,7 +128,7 @@ Sets internal shutdown schedule for future use.
 
 ## Why I Built This
 
-I wanted a fully custom and flexible way to automatically power on my PC each day without relying on BIOS wake timers or Wake-on-LAN — something smarter, more reliable, and extensible for my smart office setup.
+I wanted a fully custom and flexible way to automatically power my PC each day without relying on BIOS wake timers or Wake-on-LAN — something smarter, more reliable, more power efficeint, and extensible for my smart office setup.
 
 ---
 
@@ -137,5 +138,5 @@ MIT License — use it freely, modify it boldly.
 
 ---
 
-Made with care by [Your Name](https://github.com/YOUR_USERNAME)
+Made with care by [Benjamin Isaac Medina](http://benstechsolutions.net)
 
