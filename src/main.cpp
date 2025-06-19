@@ -6,22 +6,18 @@
 
 #define LED 2
 #define outPin 13 // Outputs power
-#define inPin 23 // Tests where the output for the button light comes from the motherboard to see if it's giving output. If yes, pc is on.
+#define inPin 23  // Tests output from motherboard power light to detect ON/OFF
 
 BasicOTA OTA;
 
 const char* ssid = "YOUR_WIFI_SSID";
 const char* password = "YOUR_WIFI_PASSWORD";
 
-// Pacific Time: UTC-8 standard, UTC-7 with daylight savings
-const long gmtOffset_sec = -8 * 3600;
-const int daylightOffset_sec = 3600;
-
 // Globals
 String pcState = "UNKNOWN";
 int shutdownHour = 22;
-int shutdownMinute = 01;
-int turnOnHour = 06;
+int shutdownMinute = 1;
+int turnOnHour = 6;
 int turnOnMinute = 0;
 
 WebServer server(80);
@@ -29,7 +25,6 @@ WebServer server(80);
 void setPCState(bool isOn) {
   pcState = isOn ? "ON" : "OFF";
   Serial.println("PC State set to: " + pcState);
-  // TODO: send to Pixoo64
 }
 
 String getPCState() {
@@ -55,10 +50,10 @@ void switchOff() {
     delay(5000);
     digitalWrite(outPin, HIGH);
     Serial.println("Switched PC OFF.");
-    setPCState(true);
+    setPCState(false);
   } else {
     Serial.println("PC ALREADY OFF");
-    setPCState(true);
+    setPCState(false);
   }
 }
 
@@ -83,7 +78,7 @@ void setup() {
   pinMode(LED, OUTPUT);
   pinMode(outPin, OUTPUT);
   pinMode(inPin, INPUT);
-  digitalWrite(outPin, HIGH); // default HIGH
+  digitalWrite(outPin, HIGH); // Default HIGH
 
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi");
@@ -95,8 +90,11 @@ void setup() {
 
   OTA.begin();
 
-  // Time sync
-  configTime(gmtOffset_sec, daylightOffset_sec, "pool.ntp.org", "time.nist.gov");
+  // Configure system time using NTP with dynamic timezone support
+  setenv("TZ", "UTC", 1);   // Change "UTC" to your timezone string, e.g., "PST8PDT", "EST5EDT", etc.
+  tzset();
+  configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+
   struct tm timeinfo;
   while (!getLocalTime(&timeinfo)) {
     Serial.println("Waiting for NTP time...");
@@ -104,10 +102,10 @@ void setup() {
   }
   Serial.println("Time synced.");
 
-  // Initial state
+  // Initial state detection
   setPCState(digitalRead(inPin) == HIGH);
 
-  // Web server routes
+  // Web routes
   server.on("/api/status", handleStatus);
   server.on("/api/set_shutdown", handleSetShutdown);
   server.begin();
@@ -119,7 +117,6 @@ void loop() {
   delay(500);
 
   OTA.handle();
-
   server.handleClient();
 
   struct tm timeinfo;
@@ -133,11 +130,9 @@ void loop() {
       switchOn();
     }
 
-    
     if (timeinfo.tm_hour == shutdownHour && timeinfo.tm_min == shutdownMinute && timeinfo.tm_sec == 0) {
       switchOff();
     }
-
   } else {
     Serial.println("Failed to get time.");
   }
