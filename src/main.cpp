@@ -21,13 +21,15 @@ const int daylightOffset_sec = 3600;
 String pcState = "UNKNOWN";
 int shutdownHour = 22;
 int shutdownMinute = 01;
+int turnOnHour = 06;
+int turnOnMinute = 0;
 
 WebServer server(80);
 
 void setPCState(bool isOn) {
   pcState = isOn ? "ON" : "OFF";
   Serial.println("PC State set to: " + pcState);
-  // Later: send to Pixoo64
+  // TODO: send to Pixoo64
 }
 
 String getPCState() {
@@ -127,12 +129,11 @@ void loop() {
     Serial.print("Current time: ");
     Serial.println(timeStr);
 
-    if (timeinfo.tm_hour == 6 && timeinfo.tm_min == 0 && timeinfo.tm_sec == 0) {
+    if (timeinfo.tm_hour == turnOnHour && timeinfo.tm_min == turnOnMinute && timeinfo.tm_sec == 0) {
       switchOn();
-      delay(1000); // Avoid retrigger
     }
 
-    // Future: check for shutdownHour/shutdownMinute
+    
     if (timeinfo.tm_hour == shutdownHour && timeinfo.tm_min == shutdownMinute && timeinfo.tm_sec == 0) {
       switchOff();
     }
