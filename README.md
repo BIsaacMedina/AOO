@@ -138,5 +138,5 @@ MIT License — use it freely, modify it boldly.
 
 ---
 
-Made with care by [Benjamin Isaac Medina](benstechsolutions.net)
+Made with care by [Benjamin Isaac Medina](http://benstechsolutions.net)
 
