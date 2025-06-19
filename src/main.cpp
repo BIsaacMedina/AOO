@@ -10,8 +10,8 @@
 
 BasicOTA OTA;
 
-const char* ssid     = "NETGEAR52";
-const char* password = "exoticroad813";
+const char* ssid = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PASSWORD";
 
 // Pacific Time: UTC-8 standard, UTC-7 with daylight savings
 const long gmtOffset_sec = -8 * 3600;
