@@ -2,7 +2,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <time.h>
-#include "BasicOTA.hpp"
+#include <BasicOTA.hpp>
 
 #define LED 2
 #define outPin 13 // Outputs power
